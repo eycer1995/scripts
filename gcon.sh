@@ -4,7 +4,7 @@
 ssh git@github.com 2>/tmp/gcon.txt
 con_status=$(cat /tmp/gcon.txt | awk '{print $3}')
 
-SSH_AGENT_PID=$(ps -fea | grep "ssh-agent" | head -1 | awk '{print $2}')
+SSH_AGENT_PID=$(ps -fea | grep "ssh-agent" | grep -v grep | head -1 | awk '{print $2}')
 
 if [ $con_status == "denied" ]; then
     echo "Connection denied... reestablishing"
