@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Check that the correct number of arguments were provided
+if [ "$#" -ne 2  ]; then
+echo "Error: This script requires two arguments."
+echo "Usage: $0 start|stop|restore argument2"
+exit 1
+fi
+
+# Assign the arguments to variables
+ACTION=$1
+VM_NAME=$2
+
+# Check that the first argument is valid
+if [ "$ACTION" != "start"  ] && [ "$ACTION" != "stop"  ] && [ "$ACTION" != "restore"  ]; then
+echo "Error: Invalid action. The first argument must be 'start', 'stop', or 'restore'."
+exit 1
+fi
+
+# Perform the action based on the first argument
+case $ACTION in
+	start)
+	echo "Starting... $VM_NAME"
+	vboxmanage startvm $VM_NAME --type headless
+	;;
+	stop)
+	echo "Stopping... $VM_NAME"
+	vboxmanage controlvm $VM_NAME poweroff
+	;;
+	restore)
+	echo "Restoring... $VM_NAME"
+	LAST_SNAPSHOT=$(vboxmanage snapshot $VM_NAME list --machinereadable | grep -oP 'CurrentSnapshotName="\K[^"]+')
+	vboxmanage controlvm $VM_NAME poweroff
+	sleep 1
+	vboxmanage snapshot $VM_NAME restore $LAST_SNAPSHOT
+	sleep 1
+	vboxmanage startvm $VM_NAME --type headless
+	;;
+	esac
+
+exit 0
