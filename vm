@@ -10,9 +10,18 @@ fi
 # Assign the arguments to variables
 ACTION=$1
 VM_NAME=$2
+ALL_VMS=$(vboxmanage list vms | awk '{print $1}' | sed 's/\"//g')
+
+if printf '%s\n' "${ALL_VMS[@]}" | grep -q "^$VM_NAME$"; then
+	echo "VM found" &>/dev/null
+else
+	echo "VM not found, check the name."
+	exit 1
+fi
+
 
 # Check that the first argument is valid
-if [ "$ACTION" != "start"  ] && [ "$ACTION" != "stop"  ] && [ "$ACTION" != "restore"  ]; then
+if [ "$ACTION" != "start"  ] && [ "$ACTION" != "stop"  ] && [ "$ACTION" != "restore"  ] && [ "$ACTION" != "status" ]; then
 echo "Error: Invalid action. The first argument must be 'start', 'stop', or 'restore'."
 exit 1
 fi
@@ -35,6 +44,9 @@ case $ACTION in
 	vboxmanage snapshot $VM_NAME restore $LAST_SNAPSHOT
 	sleep 1
 	vboxmanage startvm $VM_NAME --type headless
+	;;
+	status)
+	vboxmanage showvminfo $VM_NAME --machinereadable | grep State= | awk -F= '{print $2}' | sed 's/\"//g'
 	;;
 	esac
 
