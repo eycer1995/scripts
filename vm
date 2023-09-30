@@ -41,7 +41,7 @@ case $ACTION in
 	LAST_SNAPSHOT=$(vboxmanage snapshot $VM_NAME list --machinereadable | grep -oP 'CurrentSnapshotName="\K[^"]+')
 	vboxmanage controlvm $VM_NAME poweroff
 	sleep 1
-	vboxmanage snapshot $VM_NAME restore $LAST_SNAPSHOT
+	vboxmanage snapshot $VM_NAME restore "$LAST_SNAPSHOT"
 	sleep 1
 	vboxmanage startvm $VM_NAME --type headless
 	;;

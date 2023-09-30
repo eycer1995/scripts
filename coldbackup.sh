@@ -10,7 +10,7 @@ home_backup() {
 }
 # Backup gitea
 gitea_backup() {
-	rsync -aP debpod1:/opt/gitea/backup/ /mnt/ares/gitea
+	rsync -aP debpod01:/opt/gitea/backup/ /mnt/ares/gitea
 }
 
 # Backup privseedbox
@@ -27,7 +27,7 @@ mam_backup() {
 # Backup jellyfin files and media
 jellyfin_backup() {
 	ROOT_JELLYFIN="/mnt/hades/hms/jellyfin"
-	rsync -aP rpi01:$ROOT_JELLYFIN/animemovies /mnt/ares/jellyfin
+	rsync -aP rpi01:$ROOT_JELLYFIN/animovies /mnt/ares/jellyfin
 	rsync -aP rpi01:$ROOT_JELLYFIN/config /mnt/ares/jellyfin
 	rsync -aP rpi01:$ROOT_JELLYFIN/movies /mnt/ares/jellyfin
 	rsync -aP rpi01:$ROOT_JELLYFIN/tvseries /mnt/ares/jellyfin
@@ -41,19 +41,33 @@ kavita_backup() {
 
 # Check if cold HDD is present
 if sudo blkid -s UUID -o value /dev/sdd1 | grep -q "$ARES_UUID"; then
-  # Mount the hard drive on /mnt/ares
-  sudo mount -U $ARES_UUID /mnt/ares
-  echo "Hard drive with UUID $ARES_UUID mounted on /mnt/ares"
+  # Check if /mnt/ares is already mounted, if not mount it.
+  df -h /mnt/ares
+  if [ $? -eq 0 ]; then
+	  echo "HDD ares is already mounted"
+  else
+	  echo "mounting ares"
+	  sudo mount -U $ARES_UUID /mnt/ares
+	  echo "Hard drive with UUID $ARES_UUID mounted on /mnt/ares"
+  fi
   home_backup
   gitea_backup
   privseedbox_backup
   mam_backup
   jellyfin_backup
+
 elif sudo blkid -s UUID -o value /dev/sdd1 | grep -q "$EROS_UUID"; then
-  # Mount the hard drive on /mnt/eros
-  sudo mount -U $EROS_UUID /mnt/eros
-  echo "Hard drive with UUID $EROS_UUID mounted on /mnt/eros"
+  # Check if /mnt/eros is already mounted, if not mount it.
+  df -h /mnt/eros
+  if [ $? -eq 0 ]; then
+	  echo "HDD eros is already mounted"
+  else
+	  echo "mounting eros"
+	  sudo mount -U $EROS_UUID /mnt/eros
+	  echo "Hard drive with UUID $EROS_UUID mounted on /mnt/eros"
+  fi
   kavita_backup
+
 else
   echo "There are no cold HDDs present"
 fi
