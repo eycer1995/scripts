@@ -9,7 +9,10 @@ echo
 echo "--- OS Information ---"
 echo
 uname -a
+echo
 echo -e "\e[1;36mCurrent Kernel\e[0m: `uname -r`"
+echo
+echo -e "\e[1;36mCurrent NVIDIA Driver\e[0m: `modinfo -F version nvidia`"
 echo
 # Next kernel to boot:
 # sudo grubby --info=ALL | grep kernel | head -n 1 | awk -F"-" '{print $2,$3}' | sed 's/.$//'

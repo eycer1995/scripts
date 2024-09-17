@@ -75,7 +75,7 @@ if sudo blkid -s UUID -o value /dev/sdd1 | grep -q "$ARES_UUID"; then
   jellyfin_backup
   hms_config_backup
 
-elif sudo blkid -s UUID -o value /dev/sde1 | grep -q "$EROS_UUID"; then
+elif sudo blkid -s UUID -o value /dev/sdd1 | grep -q "$EROS_UUID"; then
   # Check if /mnt/eros is already mounted, if not mount it.
   df -h /mnt/eros
   if [ $? -eq 0 ]; then
